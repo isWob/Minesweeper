@@ -16,8 +16,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  # enablement: true 自动创建 Pages 站点需要 administration 权限
-  administration: write
 
 jobs:
   build:
@@ -53,9 +51,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # 自动启用 Pages，免去手动到 Settings → Pages 设置 Source
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
