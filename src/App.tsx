@@ -122,7 +122,7 @@ export default function App() {
         <p className="hint" aria-live="polite">
           {inputMode === 'flag'
             ? '🚩 插旗模式：轻点格子插旗/取消旗 · 切回「揭开」模式继续挖雷'
-            : '⛏️ 揭开模式：轻点挖雷 · 切换「插旗」模式或长按格子插旗 · 数字格点击和弦'}
+            : '⛏️ 揭开模式：轻点挖雷 · 切换「插旗」模式或右键插旗 · 数字格点击和弦'}
         </p>
       </main>
 
@@ -137,7 +137,7 @@ export default function App() {
       />
 
       <footer className="app__footer">
-        <span>React + TypeScript + Vite · 工业级实现</span>
+        <span>React + TypeScript + Vite · 扫雷游戏</span>
       </footer>
     </div>
   );
