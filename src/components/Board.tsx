@@ -5,6 +5,8 @@ export interface BoardProps {
   rows: number;
   cols: number;
   grid: CellModel[][];
+  /** 插旗模式：轻点格子执行插旗而非揭开 */
+  flagMode: boolean;
   onReveal: (row: number, col: number) => void;
   onFlag: (row: number, col: number) => void;
   onChord: (row: number, col: number) => void;
@@ -15,6 +17,7 @@ export function Board({
   rows,
   cols,
   grid,
+  flagMode,
   onReveal,
   onFlag,
   onChord,
@@ -38,6 +41,7 @@ export function Board({
             row={r}
             col={c}
             cell={cell}
+            flagMode={flagMode}
             onReveal={onReveal}
             onFlag={onFlag}
             onChord={onChord}

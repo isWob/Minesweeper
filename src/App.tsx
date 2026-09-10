@@ -3,6 +3,7 @@ import { Board } from './components/Board';
 import { DifficultySelector } from './components/DifficultySelector';
 import { GameModal } from './components/GameModal';
 import { BestTimesPanel } from './components/BestTimesPanel';
+import { InputModeToggle, InputMode } from './components/InputModeToggle';
 import { Toolbar } from './components/Toolbar';
 import { useMinesweeper } from './hooks/useMinesweeper';
 import { getMineCount } from './game/engine';
@@ -15,13 +16,30 @@ import {
   submitScore,
 } from './storage/bestTimes';
 
+const INPUT_MODE_KEY = 'minesweeper.inputMode.v1';
+
+function loadInputMode(): InputMode {
+  if (typeof window === 'undefined') return 'reveal';
+  return window.localStorage.getItem(INPUT_MODE_KEY) === 'flag' ? 'flag' : 'reveal';
+}
+
 export default function App() {
   const { state, dispatch, newGame } = useMinesweeper('intermediate');
   const [pressing, setPressing] = useState(false);
   const [best, setBest] = useState<BestTimes>(() => loadBestTimes());
   const [isNewRecord, setIsNewRecord] = useState(false);
+  // 触屏操作模式（持久化，记住用户偏好）
+  const [inputMode, setInputMode] = useState<InputMode>(() => loadInputMode());
   // 用于触发胜负一次性副作用，避免在渲染中提交成绩
   const lastPhaseRef = useRef(state.phase);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(INPUT_MODE_KEY, inputMode);
+    } catch {
+      // 隐私模式等场景忽略
+    }
+  }, [inputMode]);
 
   // 胜负时刻：提交成绩
   useEffect(() => {
@@ -86,11 +104,14 @@ export default function App() {
           onReset={handleReset}
         />
 
-        <div className="board-wrap">
+        <InputModeToggle value={inputMode} onChange={setInputMode} />
+
+        <div className={`board-wrap board-wrap--${inputMode}`}>
           <Board
             rows={state.rows}
             cols={state.cols}
             grid={state.grid}
+            flagMode={inputMode === 'flag'}
             onReveal={handleReveal}
             onFlag={handleFlag}
             onChord={handleChord}
@@ -98,8 +119,10 @@ export default function App() {
           />
         </div>
 
-        <p className="hint">
-          左键揭开 · 右键（或长按）插旗 · 数字格点击和弦 · F 插旗 · 空格/回车揭开
+        <p className="hint" aria-live="polite">
+          {inputMode === 'flag'
+            ? '🚩 插旗模式：轻点格子插旗/取消旗 · 切回「揭开」模式继续挖雷'
+            : '⛏️ 揭开模式：轻点挖雷 · 切换「插旗」模式或长按格子插旗 · 数字格点击和弦'}
         </p>
       </main>
 

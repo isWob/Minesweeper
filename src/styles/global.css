@@ -194,6 +194,67 @@ body {
   box-shadow: 0 4px 12px rgba(56, 189, 248, 0.35);
 }
 
+/* ===== Input mode toggle (触屏揭开/插旗模式) ===== */
+.input-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.input-mode__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 2px solid rgba(148, 163, 184, 0.25);
+  background: var(--panel);
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 8px 12px;
+}
+
+.input-mode__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.input-mode__btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.input-mode--reveal .input-mode__btn--active {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+
+.input-mode--flag .input-mode__btn--active {
+  background: linear-gradient(135deg, #f43f5e, #ef4444);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
+}
+
+/* 插旗模式下棋盘整体提示 */
+.board-wrap.board-wrap--flag {
+  border-color: rgba(244, 63, 94, 0.55);
+  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.25);
+}
+
+/* 插旗模式下未揭开格的悬停/按下态为红色，明确告知"轻点将插旗" */
+.cell--flag-mode:hover:not(.cell--revealed):not(.cell--flagged) {
+  background: linear-gradient(180deg, #fb7185, #e11d48);
+}
+
 /* ===== Board ===== */
 .board-wrap {
   overflow: auto;
