@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { Cell as CellModel } from '../game/types';
 
 export interface CellProps {
@@ -51,7 +51,17 @@ export const Cell = memo(function Cell({
   onChord,
   onPressingChange,
 }: CellProps) {
+  // 跨渲染保持的 ref：局部变量在 memo 重渲染后闭包丢失，会导致状态错乱
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 长按插旗后置 true，用于吞掉 touchend 后浏览器派发的合成 click，
+  // 否则"第二次长按取消旗子"时合成 click 会把刚取消旗的格子直接揭开
+  const suppressClickRef = useRef(false);
+
   const handleClick = () => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
     if (cell.status === 'revealed' && cell.adjacent > 0) {
       onChord(row, col);
     } else {
@@ -64,36 +74,30 @@ export const Cell = memo(function Cell({
     onFlag(row, col);
   };
 
-  // 触屏长按插旗
-  let touchTimer: ReturnType<typeof setTimeout> | null = null;
-  let touched = false;
+  // 触屏长按 350ms 插旗/取消旗（toggle），带触感反馈
   const handleTouchStart = () => {
-    touched = true;
     onPressingChange(true);
-    touchTimer = setTimeout(() => {
-      if (touched) {
-        onFlag(row, col);
-        touched = false;
-        if (typeof navigator !== 'undefined' && navigator.vibrate) {
-          navigator.vibrate(30);
-        }
+    touchTimerRef.current = setTimeout(() => {
+      touchTimerRef.current = null;
+      suppressClickRef.current = true;
+      onFlag(row, col);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(30);
       }
     }, 350);
   };
   const handleTouchEnd = () => {
-    if (touchTimer) {
-      clearTimeout(touchTimer);
-      touchTimer = null;
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
     }
-    touched = false;
     onPressingChange(false);
   };
   const handleTouchMove = () => {
-    if (touchTimer) {
-      clearTimeout(touchTimer);
-      touchTimer = null;
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
     }
-    touched = false;
     onPressingChange(false);
   };
 
