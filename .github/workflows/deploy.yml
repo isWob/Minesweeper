@@ -16,6 +16,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # enablement: true 自动创建 Pages 站点需要 administration 权限
+  administration: write
 
 jobs:
   build:
